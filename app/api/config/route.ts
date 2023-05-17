@@ -16,8 +16,19 @@ declare global {
   type DangerConfig = typeof DANGER_CONFIG;
 }
 
+async function captureAndRethrow(e: any) {
+  if (!e.stack?.includes("\n")) {
+    Error.captureStackTrace(e);
+  }
+  throw e;
+}
+
 async function handle() {
-  return NextResponse.json(DANGER_CONFIG);
+  try {
+    return NextResponse.json(DANGER_CONFIG);
+  } catch (err) {
+    captureAndRethrow(err);
+  }
 }
 
 export const GET = handle;
